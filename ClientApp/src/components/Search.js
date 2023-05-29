@@ -1,10 +1,9 @@
-﻿import React, { useState } from 'react';
+﻿import React, { useState, useRef } from 'react';
 
 const Search = () => {
     const [searchText, setSearchText] = useState("");
     const [result, setResult] = useState();
     const [meta, setMeta] = useState({ isLoading: false, isError: false, errorMsg: '', duration:0 }); //initially is loading True
-
     const fetchResult = async (searchValue) => {
         try {
             const response = await fetch(`wordsearch/${searchValue}`); //needs to be the same as in setupProxy
@@ -22,26 +21,30 @@ const Search = () => {
         <label>{meta.errorMsg}</label>
     </div>)
 
+    const handleFocus = (event) => event.target.select();
+    const handleSearch = async (event) => {
+        event.preventDefault();
+        if (searchText.length <= 0) return;
+        setMeta({ ...meta, isLoading: true });
+        const start = Date.now();
+        await fetchResult(searchText)
+        const stop = Date.now();
+        setMeta({ ...meta, isLoading: false, duration: stop - start });
+    }
+
     return (
         <div>
-            <div className="flex justify-center">
+            <form className="flex justify-center" onSubmit={handleSearch}>
                 <label>Suchbegriff eingeben:{' '}</label>
-                <input className="m-2" type="text" value={searchText} onChange={async (e) => {
+                <input className="m-2" type="text" autoFocus onFocus={handleFocus} value={searchText} onChange={async (e) => {
                     const { value } = e.target;
-                    //setMeta({ ...meta, isLoading: true });
+                    //setMeta({ ...meta, isLoading: true }); //inkrementelles Suchen (nicht optimiert)
                     //await fetchResult(value);
                     //setMeta({ ...meta, isLoading: false });
                     setSearchText(value);
                 }}></input>
-                <button className="btn btn-primary" onClick={async () => {
-                    if (searchText.length <= 0) return;
-                    setMeta({ ...meta, isLoading: true });
-                    const start = Date.now();
-                    await fetchResult(searchText)
-                    const stop = Date.now();
-                    setMeta({ ...meta, isLoading: false, duration: stop - start });
-                }}>suchen</button>
-            </div>
+                <input type="submit" className="btn btn-primary" value="suchen"></input>
+            </form>
             <div>
                 {result && (<label>Benötigte Zeit im Backend: {result.searchDurationInMilliseconds} ms</label>)}
                 <br />
