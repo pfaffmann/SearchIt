@@ -6,11 +6,11 @@ namespace SearchIt.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class SearchController : ControllerBase
+    public class WordSearchController : ControllerBase
     {
         public WordSearchService WordSearchService { get; }
 
-        public SearchController(WordSearchService wordSearchService)
+        public WordSearchController(WordSearchService wordSearchService)
         {
             WordSearchService = wordSearchService;
         }
