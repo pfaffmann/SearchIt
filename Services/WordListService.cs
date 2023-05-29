@@ -9,15 +9,12 @@ namespace SearchIt.Services
         {
             Words = new WordList().Words;
         }
-
+        /// <summary>
+        /// Returns an unsorted String Array created by the WordList constructor containing four lettered words from AAAA-ZZZZ.
+        /// </summary>
         public IEnumerable<String> GetAllWords()
         {
             return Words;
-        }
-
-        public IEnumerable<String> GetAllWordsSorted()
-        {
-            return Words.AsParallel().OrderBy(w => w).ToArray();
         }
     }
 }
