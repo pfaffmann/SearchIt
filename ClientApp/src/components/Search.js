@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+﻿import React, { useState, useRef } from 'react';
 
 const Search = () => {
   const [searchText, setSearchText] = useState('');
