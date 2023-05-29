@@ -7,9 +7,8 @@ const Search = () => {
 
     const fetchResult = async (searchValue) => {
         try {
-            const response = await fetch(`search/${searchValue}`);
-            const data = await response.json();
-            console.log(data)
+            const response = await fetch(`wordsearch/${searchValue}`); //needs to be the same as in setupProxy
+            const data = await response.json();          
             setResult(data);
             setMeta({ ...meta, isLoading: false });
         } catch (error) {

@@ -16,9 +16,12 @@ namespace SearchIt.Controllers
         }
 
         [HttpGet("{SearchText}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(WordSearch))]
+        [ProducesResponseType(StatusCodes.Status206PartialContent, Type = typeof(WordSearch))]
         public IActionResult Get(String SearchText)
         {
-            return Ok(WordSearchService.GetSearchResult(SearchText));
+            WordSearch wordSearch = WordSearchService.GetSearchResult(SearchText);
+            return wordSearch.Words.Any() ? Ok(wordSearch) : StatusCode(206,wordSearch); //Any is faster than Count > 0
         }
     }
 }
