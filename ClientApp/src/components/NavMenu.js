@@ -48,9 +48,20 @@ export class NavMenu extends Component {
             <ul className="navbar-nav flex-grow">
               {/* <NavItem>
                 <NavLink tag={Link} className="text-dark" to="/">
-                  Home
+                  Suche
                 </NavLink>
               </NavItem> */}
+              <NavItem>
+                <NavLink>
+                  <a
+                    className="text-dark text-decoration-none"
+                    href="/swagger"
+                    target="_blank"
+                  >
+                    SwaggerUI
+                  </a>
+                </NavLink>
+              </NavItem>
             </ul>
           </Collapse>
         </Navbar>

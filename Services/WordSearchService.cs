@@ -23,10 +23,10 @@ namespace SearchIt.Services
             Parallel.ForEach(Words, (String Word) =>    
             {
                 bool isMatching = false;
-                for (int i = 0; i < Math.Min(SearchText.Length, Word.Length); i++)
+                for (int i = 0; i < Math.Min(SearchText.Length, Word.Length); i++) // Schleife über alle Buchstaben im Suchwort oder Wort
                 {
-                    isMatching = Word[i] == SearchText[i];
-                    if (!isMatching) break;
+                    isMatching = Word[i] == SearchText[i];  //direkter Vergleich der Buchstaben 
+                    if (!isMatching) break; //falls ein Buchstabe nicht passt, dann wird die Schleife frühzeitig verlassen
                 }
 
                 if (isMatching)
@@ -42,10 +42,13 @@ namespace SearchIt.Services
         /// </summary>
         public WordSearch GetSearchResult(string SearchText)
         {
+            IEnumerable<String> Result;
             Stopwatch watch = new Stopwatch();
+            
             watch.Start();
-            IEnumerable<String> Result = Search(SearchText);
+            Result = Search(SearchText);
             watch.Stop();
+            
             return new WordSearch(Result, watch.ElapsedMilliseconds);
         }
     }
