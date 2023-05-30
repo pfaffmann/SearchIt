@@ -7,7 +7,13 @@ const initialMetaData = {
   duration: 0,
 };
 
-const Search = () => {
+const asyncFilter = async (arr, predicate) =>
+  arr.reduce(
+    async (memo, e) => ((await predicate(e)) ? [...(await memo), e] : memo),
+    []
+  );
+
+const SearchIncrement = () => {
   const [searchText, setSearchText] = useState("");
   const [result, setResult] = useState();
   const [meta, setMeta] = useState(initialMetaData); //initially is loading True
@@ -23,23 +29,32 @@ const Search = () => {
     }
   };
 
-  const handleSearch = async (event) => {
-    event.preventDefault();
-    if (searchText.length <= 0) return;
+  const handleSearch = async (searchValue) => {
     setMeta({ ...meta, isLoading: true });
     const start = Date.now();
-    await fetchResult(searchText);
+    await fetchResult(searchValue);
     const stop = Date.now();
     setMeta({ ...meta, isLoading: false, duration: stop - start });
   };
 
-  const handleFocus = (event) => {
-    event.target.select();
+  const handleIncrementSearch = async (searchValue) => {
+    if (!result) return await handleSearch(searchValue);
+
+    setMeta({ ...meta, isLoading: true });
+    const start = Date.now();
+    const words = await asyncFilter(result.words, (word) =>
+      word.includes(searchValue)
+    );
+    const stop = Date.now();
+    setMeta({ ...meta, isLoading: false, duration: stop - start });
+    setResult({ words, searchDurationInMilliseconds: 0 });
   };
 
-  const handleInputChange = (event) => {
+  const handleInputChange = async (event) => {
     const { value } = event.target;
     setSearchText(value);
+    if (value.length <= 0) return handleReset();
+    await handleIncrementSearch(value);
   };
 
   const handleReset = () => {
@@ -48,32 +63,29 @@ const Search = () => {
     setMeta(initialMetaData);
   };
 
-  if (meta.isLoading) return <h3>Loading ... </h3>;
-  if (meta.isError)
-    return (
-      <div>
-        <h3>An Error occured.</h3>
-        <label>{meta.errorMsg}</label>
-      </div>
-    );
+  const loading = (
+    <div className="row">
+      <h3>Loading ...</h3>
+    </div>
+  );
+  const error = (
+    <div className="row">
+      <h3>Error</h3>
+      <label>{meta.errorMsg}</label>
+    </div>
+  );
 
   return (
     <div className="row">
       <div className="col">
-        <form onSubmit={handleSearch}>
+        <h2>Inkrementelle Suche - Testseite</h2>
+        <form>
           <label>Suchbegriff eingeben:</label>
           <input
             className="m-2"
             type="text"
             value={searchText}
             onChange={handleInputChange}
-            autoFocus
-            onFocus={handleFocus}
-          ></input>
-          <input
-            type="submit"
-            className="btn btn-primary"
-            value="suchen"
           ></input>
         </form>
       </div>
@@ -94,8 +106,12 @@ const Search = () => {
           </button>
         )}
       </div>
+      <>
+        {meta.isLoading && loading}
+        {meta.isError && error}
+      </>
       <div className="row">
-        {result && (
+        {result && !meta.isLoading && (
           <table className="col-2">
             <thead>
               <tr>
@@ -119,4 +135,4 @@ const Search = () => {
   );
 };
 
-export default Search;
+export default SearchIncrement;
